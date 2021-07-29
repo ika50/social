@@ -1,0 +1,59 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container">
+    <div class="card-footer text-muted">
+        <h2 class="article-title">{{object.title}}</h2>
+        <small>written by <a class="mr=2" href="{% url 'user-posts' object.author.username %}">{{object.author}}
+            </a></small>
+        <small class="text-muted">{{object.date_posted| date:"F d, Y"}} </small>
+        {% if object.author == user %}
+        <div>
+            <a class="btn btn-outline-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+            <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+        </div>
+        {% endif%}
+
+        <p class="card-text">{{ object.content }}</p>
+
+    </div>
+
+    <!-- Comment form-->
+
+    <div class="container">
+        <div class="content-section">
+            <h2 class="subtitle">Comments...</h2>
+            {% for comment in post.comments.all%}
+            <article class="media">
+                <p>
+                    <strong>{{ comment.name }}</strong> on <small>{{comment.date_posted}}</small>
+
+                    <br>
+                    {{comment.content}}
+                </p>
+            </article>
+
+            {% empty %}
+            <p>No comments yet!</p>
+            {% endfor%}
+        </div><br>
+        <div>
+
+            {% if new_comment %}
+            <h2>Your comment has been added.</h2>
+            {% else %}
+
+            <form method="POST" action=".">
+
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend>Leave A Comment</legend>
+                    {{ form| crispy }}
+                </fieldset>
+                <p><input type="submit" class="btn btn-warning" value="Add comment"></p>
+            </form>
+            {% endif %}
+            {% endblock %}
